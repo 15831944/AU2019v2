@@ -36,8 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcDbMgd">
-      <HintPath>..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcDbMgd.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcDbMgd.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.4.0\lib\net45\Castle.Core.dll</HintPath>

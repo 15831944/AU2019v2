@@ -26,14 +26,14 @@ namespace AU2019
 
             var doc = Application.DocumentManager.MdiActiveDocument;
             var db = doc.Database;
-        var ed = doc.Editor;
-        var selectionResult = ed.SelectAll(selectionFilter);
-        if (selectionResult.Status != PromptStatus.OK)
-        {
-            ed.WriteMessage("\nUser cancelled, or no valid objects found.");
-            return;
-        }
-        var selection = selectionResult.Value;
+            var ed = doc.Editor;
+            var selectionResult = ed.SelectAll(selectionFilter);
+            if (selectionResult.Status != PromptStatus.OK)
+            {
+                ed.WriteMessage("\nUser cancelled, or no valid objects found.");
+                return;
+            }
+            var selection = selectionResult.Value;
 
             double area = 0;
             double perimeter = 0;
@@ -76,57 +76,29 @@ namespace AU2019
 
         }
 
-    [CommandMethod("SUMAREASREFACTORED")]
-    public void SumAreasRefactored()
-    {
-        var filterSource = new AreaFilter();
-        SumAreas(ed => ed.SelectAllByIFilterSource(filterSource));
-    }
-
-    [CommandMethod("SUMAREASCIRCLES")]
-    public void SumCircleAreas()
-    {
-        var filterSource = new CircleFilter();
-        SumAreas(ed => ed.SelectAllByIFilterSource(filterSource));
-    }
-
-    [CommandMethod("SUMAREASCIRCLESWINDOW")]
-    public void SumCircleAreasWindow()
-    {
-        var filterSource = new CircleFilter();
-        SumAreas(ed => ed.SelectByPickCrossingWindow(filterSource));
-    }
-
-    private void SumAreas(Func<Editor, PromptSelectionResult> selectionTechnique)
-    {
-        var ed = Active.Editor;
-        var selectionResult = selectionTechnique(ed);
-        if (selectionResult.Status != PromptStatus.OK)
+        [CommandMethod("SUMAREASREFACTORED")]
+        public void SumAreasRefactored()
         {
-            ed.WriteMessage("\nUser cancelled, or no valid objects found.");
-            return;
+            IFilterSource filterSource = new AreaFilter();
+            var summarizer = new AreaObjectSummarizer(filterSource);
+            summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
         }
 
-        var selection = selectionResult.Value;
-        var areaObjects = new List<IAreaObject>();
-        Active.UsingTransaction(tr =>
+        [CommandMethod("SUMAREASCIRCLES")]
+        public void SumCircleAreas()
         {
-            foreach (SelectedObject ssObj in selection)
-            {
-                Entity ent = (Entity)tr.GetObject(ssObj.ObjectId, OpenMode.ForRead);
-                var areaObject = ent.ToAreaObject();
-                if (areaObject != null)
-                    areaObjects.Add(areaObject);
-            }
-        });
+            var filterSource = new CircleFilter();
+            var summarizer = new AreaObjectSummarizer(filterSource);
+            summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
+        }
 
-        var calculator = new AreaCalculator();
-        calculator.Update(areaObjects);
-        var message = $"\nFound {calculator.Count} objects" +
-            $"\nSum of areas: {calculator.Area}" +
-            $"\nSum of perimiters: {calculator.Perimeter}";
+        [CommandMethod("SUMAREASCIRCLESWINDOW")]
+        public void SumCircleAreasWindow()
+        {
+            var filterSource = new CircleFilter();
+            var summarizer = new AreaObjectSummarizer(filterSource);
+            summarizer.Summarize((ed, fs) => ed.SelectCrossingWindowUsingFilterSource(fs));
+        }
 
-        ed.WriteMessage(message);
-    }
     }
 }

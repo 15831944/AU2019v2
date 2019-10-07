@@ -9,40 +9,40 @@ using System.Threading.Tasks;
 namespace AU2019Tests
 {
     [TestFixture]
-    public class CircleFilterTests : IFilterSourceTestsBase<CircleFilter>
+    public class CircleFilterTests
     {
-        [Test]
-        public override void GetFilter_Returns_ArrayOfTypedValue()
+        CircleFilter sut;
+        [SetUp]
+        public void Setup()
         {
-            GetFilter_Returns_ArrayOfTypedValue(1);
+            sut = new CircleFilter();
+        }
+        [Test]
+        public void Instantiate()
+        {
+            Assert.IsNotNull(sut);
+        }
+
+        [Test]
+        public void GetFilter_Returns_ArrayOfTypedValue()
+        {
+            //Arrange
+            var expected = 1;
+
+            //Act
+            var actual = sut.GetFilter();
+            //Assert
+            Assert.That(actual.Length, Is.EqualTo(expected));
         }
     }
 
     //[TestFixture]
-    //public class CircleFilterTests
+    //public class CircleFilterTests : IFilterSourceTestsBase<CircleFilter>
     //{
-    //    CircleFilter sut;
-    //    [SetUp]
-    //    public void Setup()
-    //    {
-    //        sut = new CircleFilter();
-    //    }
     //    [Test]
-    //    public void Instantiate()
+    //    public override void GetFilter_Returns_ArrayOfTypedValue()
     //    {
-    //        Assert.IsNotNull(sut);
+    //        GetFilter_Returns_ArrayOfTypedValue(1);
     //    }
-
-    //[Test]
-    //public void GetFilter_Returns_ArrayOfTypedValue()
-    //{
-    //    //Arrange
-    //    var expected = 1;
-
-    //    //Act
-    //    var actual = sut.GetFilter();
-    //    //Assert
-    //    Assert.That(actual.Length, Is.EqualTo(expected));
-    //}
     //}
 }

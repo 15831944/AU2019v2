@@ -32,15 +32,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
-      <HintPath>..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcCoreMgd.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcDbMgd.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
-      <HintPath>..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcMgd.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Autodesk_ObjectARX_2019_Win_64_and_32_Bit\inc\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -60,12 +60,14 @@
     <Compile Include="AreaCalculator.cs" />
     <Compile Include="AreaFilter.cs" />
     <Compile Include="AreaObjectAdapterBase.cs" />
+    <Compile Include="AreaObjectSummarizer.cs" />
     <Compile Include="Autocad\Active.cs" />
     <Compile Include="Autocad\PaletteHelper.cs" />
     <Compile Include="CircleAdapter.cs" />
     <Compile Include="CircleFilter.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="EntityExtensions.cs" />
+    <Compile Include="IAreaCalculator.cs" />
     <Compile Include="IAreaObject.cs" />
     <Compile Include="IFilterSource.cs" />
     <Compile Include="EditorExtensions.cs" />
