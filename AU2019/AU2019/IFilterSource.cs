@@ -2,8 +2,8 @@
 
 namespace AU2019
 {
-    public interface IFilterSource
-    {
-        TypedValue[] GetFilter();
-    }
+public interface IFilterSource
+{
+    TypedValue[] GetFilter();
+}
 }

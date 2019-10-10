@@ -7,43 +7,43 @@ using System.Threading.Tasks;
 
 namespace AU2019Tests
 {
-
     [TestFixture]
-    public class AreaFilterTests : IFilterSourceTestsBase<AreaFilter>
+    public class AreaFilterTests
     {
-
-        [Test]
-        public override void GetFilter_Returns_ArrayOfTypedValue()
+        AreaFilter sut;
+        [SetUp]
+        public void Setup()
         {
-            GetFilter_Returns_ArrayOfTypedValue(5);
+            sut = new AreaFilter();
         }
 
+        [Test]
+        public void Instantiate()
+        {
+            Assert.IsNotNull(sut);
+        }
+
+        [Test]
+        public void GetFilter_Returns_ArrayOfTypedValue()
+        {
+            //Arrange
+            var expected = 5;
+
+            //Act
+            var actual = sut.GetFilter();
+            //Assert
+            Assert.That(actual.Length, Is.EqualTo(expected));
+        }
     }
-    //    public class AreaFilterTests
+    //[TestFixture]
+    //public class AreaFilterTests : IFilterSourceTestsBase<AreaFilter>
+    //{
+
+    //    [Test]
+    //    public override void GetFilter_Returns_ArrayOfTypedValue()
     //    {
-    //        AreaFilter sut;
-    //        [SetUp]
-    //        public void Setup()
-    //        {
-    //            sut = new AreaFilter();
-    //        }
-
-    //        [Test]
-    //        public void Instantiate()
-    //        {
-    //            Assert.IsNotNull(sut);
-    //        }
-
-    //        [Test]
-    //        public void GetFilter_Returns_ArrayOfTypedValue()
-    //        {
-    //            Arrange
-    //            var expected = 5;
-
-    //            Act
-    //            var actual = sut.GetFilter();
-    //            Assert
-    //            Assert.That(actual.Length, Is.EqualTo(expected));
-    //        }
+    //        GetFilter_Returns_ArrayOfTypedValue(5);
     //    }
+
+    //}
 }

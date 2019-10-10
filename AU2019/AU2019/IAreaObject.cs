@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AU2019
 {
-    public interface IAreaObject
-    {
-        double Area { get; }
-        double Perimeter { get; }
-    }
+public interface IAreaObject
+{
+    double Area { get; }
+    double Perimeter { get; }
+}
 }

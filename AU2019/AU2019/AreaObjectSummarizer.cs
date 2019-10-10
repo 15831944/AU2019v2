@@ -29,25 +29,25 @@ namespace AU2019
             }
             var selection = selectionResult.Value;
 
-            var areaObjects = new List<IAreaObject>();
-            Active.UsingTransaction(tr =>
+        var areaObjects = new List<IAreaObject>();
+        Active.UsingTransaction(tr =>
+        {
+            foreach (SelectedObject ssObj in selection)
             {
-                foreach (SelectedObject ssObj in selection)
-                {
-                    Entity ent = (Entity)tr.GetObject(ssObj.ObjectId, OpenMode.ForRead);
-                    var areaObject = ent.ToAreaObject();
-                    if (areaObject != null)
-                        areaObjects.Add(areaObject);
-                }
-            });
+                Entity ent = (Entity)tr.GetObject(ssObj.ObjectId, OpenMode.ForRead);
+                var areaObject = ent.ToAreaObject();
+                if (areaObject != null)
+                    areaObjects.Add(areaObject);
+            }
+        });
 
-            var calculator = new AreaCalculator();
-            calculator.Update(areaObjects);
-            var message = $"\nFound {calculator.Count} objects" +
-                $"\nSum of areas: {calculator.Area}" +
-                $"\nSum of perimiters: {calculator.Perimeter}";
+        var calculator = new AreaCalculator();
+        calculator.Update(areaObjects);
+        var message = $"\nFound {calculator.Count} objects" +
+            $"\nSum of areas: {calculator.Area}" +
+            $"\nSum of perimiters: {calculator.Perimeter}";
 
-            ed.WriteMessage(message);
+        ed.WriteMessage(message);
         }
     }
 }

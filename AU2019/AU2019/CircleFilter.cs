@@ -2,14 +2,14 @@
 
 namespace AU2019
 {
-    public class CircleFilter : IFilterSource
+public class CircleFilter : IFilterSource
+{
+    public TypedValue[] GetFilter()
     {
-        public TypedValue[] GetFilter()
-        {
-            TypedValue[] filter = new TypedValue[1];
-            filter.SetValue(new TypedValue((int)DxfCode.Start, "CIRCLE"), 0);
+        TypedValue[] filter = new TypedValue[1];
+        filter.SetValue(new TypedValue((int)DxfCode.Start, "CIRCLE"), 0);
 
-            return filter;
-        }
+        return filter;
     }
+}
 }
