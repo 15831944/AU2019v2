@@ -1,0 +1,397 @@
+﻿1. ---------------------------------
+public class AreaObjectSummarizer
+{
+    public void Summarize()
+    {
+        ...//all code previously in SumAreasStart
+    }
+}
+2. --------------------------------- Commands.cs
+[CommandMethod("SUMAREASREFACTORED")]
+public void SumAreasRefactored()
+{
+    var summarizer = new AreaObjectSummarizer();
+    summarizer.Summarize();
+}
+3. --------------------------------- 
+public interface IFilterSource
+{
+    TypedValue[] GetFilter();
+}
+
+public class AreaFilter : IFilterSource
+{
+    public TypedValue[] GetFilter()
+    {
+        TypedValue[] filter = new TypedValue[5];
+        filter.SetValue(new TypedValue((int)DxfCode.Operator, "<OR"), 0);
+        filter.SetValue(new TypedValue((int)DxfCode.Start, "CIRCLE"), 1);
+        filter.SetValue(new TypedValue((int)DxfCode.Start, "LWPOLYLINE"), 2);
+        filter.SetValue(new TypedValue((int)DxfCode.Start, "REGION"), 3);
+        filter.SetValue(new TypedValue((int)DxfCode.Operator, "OR>"), 4);
+
+        return filter;
+    }
+}
+
+public class CircleFilter : IFilterSource
+{
+    public TypedValue[] GetFilter()
+    {
+        TypedValue[] filter = new TypedValue[1];
+        filter.SetValue(new TypedValue((int)DxfCode.Start, "CIRCLE"), 0);
+
+        return filter;
+    }
+}
+4. --------------------------------- AU2019Tests
+[TestFixture]
+public class AreaFilterTests
+{
+    AreaFilter sut;
+    [SetUp]
+    public void Setup()
+    {
+        sut = new AreaFilter();
+    }
+
+    [Test]
+    public void Instantiate()
+    {
+        Assert.IsNotNull(sut);
+    }
+	[Test]
+    public void GetFilter_Returns_ArrayOfTypedValue()
+    {
+        //Arrange
+        var expected = 5;
+        //Act
+        var actual = sut.GetFilter();
+        //Assert
+        Assert.That(actual.Length, Is.EqualTo(expected));
+    }
+}
+5. ---------------------------------
+[TestFixture]
+public class CircleFilterTests
+{
+    CircleFilter _sut;
+    [SetUp]
+    public void Setup()
+    {
+        _sut = new CircleFilter();
+    }
+    [Test]
+    public void Instantiate()
+    {
+        Assert.IsNotNull(_sut);
+    }
+    [Test]
+    public void GetFilter_Returns_ArrayOfTypedValue()
+    {
+        //Arrange
+        var expected = 1;
+        //Act
+        var actual = _sut.GetFilter();
+        //Assert
+        Assert.That(actual.Length, Is.EqualTo(expected));
+    }
+}
+
+public abstract class IFilterSourceTestsBase<T>
+    where T : IFilterSource
+{
+    protected T _sut;
+
+    [SetUp]
+    public void Setup()
+    {
+        _sut = Activator.CreateInstance<T>();
+    }
+
+    [Test]
+    public virtual void Instantiate()
+    {
+        Assert.IsNotNull(_sut);
+    }
+
+    protected void GetFilter_Returns_ArrayOfTypedValue(int expected)
+    {
+        var actual = _sut.GetFilter();
+
+        Assert.That(actual.Length, Is.EqualTo(expected));
+    }
+
+    public abstract void GetFilter_Returns_ArrayOfTypedValue();
+}
+
+[TestFixture]
+public class CircleFilterTests : IFilterSourceTestsBase<CircleFilter>
+{
+    [Test]
+    public override void GetFilter_Returns_ArrayOfTypedValue()
+    {
+        GetFilter_Returns_ArrayOfTypedValue(1);
+    }
+}
+
+[TestFixture]
+public class AreaFilterTests : IFilterSourceTestsBase<AreaFilter>
+{
+    [Test]
+    public override void GetFilter_Returns_ArrayOfTypedValue()
+    {
+        GetFilter_Returns_ArrayOfTypedValue(5);
+    }
+}
+6. ---------------------------------
+Active
+7. ---------------------------------
+public interface IAreaObject
+{
+    double Area { get; }
+    double Perimeter { get; }
+}
+
+public class CircleAdapter : IAreaObject
+{
+    private Circle _entity;
+
+    public CircleAdapter(Circle entity)
+    {
+        _entity = entity;
+    }
+
+    public double Area => _entity.Area;
+
+    public double Perimeter => _entity.Circumference;
+}
+
+public class PolylineAdapter : IAreaObject
+{
+    private Polyline _entity;
+    public PolylineAdapter(Polyline entity)
+    {
+        _entity = entity;
+    }
+    public double Area => _entity.Area;
+    public double Perimeter => _entity.Length;
+}
+
+public abstract class AreaObjectAdapterBase<T> : IAreaObject
+    where T : Entity
+{
+    protected T _entity;
+    public AreaObjectAdapterBase(T entity)
+    {
+        _entity = entity;
+    }
+    public abstract double Area { get; }
+    public abstract double Perimeter { get; }
+}
+
+public class CircleAdapter : AreaObjectAdapterBase<Circle>
+{
+    public CircleAdapter(Circle circle) : base(circle)
+    {}
+    public override double Area => _entity.Area;
+    public override double Perimeter => _entity.Circumference;
+}
+
+public class RegionAdapter : AreaObjectAdapterBase<Region>
+{
+    public RegionAdapter(Region region) : base(region)
+    { }
+    public override double Area => _entity.Area;
+    public override double Perimeter => _entity.Perimeter;
+}
+
+public class PolylineAdapter : AreaObjectAdapterBase<Polyline>
+{
+    public PolylineAdapter(Polyline polyline) : base(polyline)
+    { }
+    public override double Area => _entity.Area;
+    public override double Perimeter => _entity.Length;
+}
+8. ---------------------------------
+public static class EntityExtensions
+{
+    public static IAreaObject ToAreaObject(this Entity ent)
+    {
+        switch (ent)
+        {
+            case Circle c:
+                return new CircleAdapter(c);
+            case Polyline p:
+                if (p.Closed)
+                {
+                    return new PolylineAdapter(p);
+                }
+                break;
+            case Region r:
+                return new RegionAdapter(r);
+            default:
+                break;
+        }
+
+        return null;
+    }
+}
+
+Summarize()
+        var areaObjects = new List<IAreaObject>();
+        Active.UsingTransaction(tr =>
+        {
+            foreach (SelectedObject ssObj in selection)
+            {
+                Entity ent = (Entity)tr.GetObject(ssObj.ObjectId, OpenMode.ForRead);
+                var areaObject = ent.ToAreaObject();
+                if (areaObject != null)
+                    areaObjects.Add(areaObject);
+            }
+        });
+9. ---------------------------------
+public interface IAreaCalculator
+{
+    double Area { get; }
+    int Count { get; }
+    double Perimeter { get; }
+
+    void Update(IEnumerable<IAreaObject> objects);
+}
+
+public class AreaCalculator : IAreaCalculator
+{
+    IEnumerable<IAreaObject> _objects;
+
+    public double Area => _objects != null ? _objects.Sum(obj => obj.Area) : 0;
+    public double Perimeter => _objects != null ? _objects.Sum(obj => obj.Perimeter) : 0;
+    public int Count => _objects != null ? _objects.Count() : 0;
+
+    public void Update(IEnumerable<IAreaObject> objects)
+    {
+        _objects = objects;
+    }
+}
+10. --------------------------------- AU2019Tests
+[TestFixture]
+public class AreaCalculatorTests
+{
+    private AreaCalculator _sut;
+
+    [SetUp]
+    public void Setup()
+    {
+        _sut = new AreaCalculator();
+    }
+    [Test]
+    public void Instantiate()
+    {
+        Assert.IsNotNull(_sut);
+    }
+    [Test]
+    public void Sums_Area_Of_IAreaObjects()
+    {
+        var expected = 10;
+        var testObjects = CreateObjectsToTest();
+        _sut.Update(testObjects);
+
+        var actual = _sut.Area;
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
+    [Test]
+    public void Sums_Perimeter_Of_IAreaObjects()
+    {
+        var expected = 4;
+        var testObjects = CreateObjectsToTest();
+        _sut.Update(testObjects);
+
+        var actual = _sut.Perimeter;
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    private IEnumerable<IAreaObject> CreateObjectsToTest()
+    {
+        Mock<IAreaObject> mockArea1 = new Mock<IAreaObject>();
+        mockArea1.Setup(x => x.Area).Returns(5);
+        mockArea1.Setup(x => x.Perimeter).Returns(2);
+
+        Mock<IAreaObject> mockArea2 = mockArea1;
+
+        IEnumerable<IAreaObject> objects = new List<IAreaObject> 
+        { 
+            mockArea1.Object, 
+            mockArea2.Object 
+        };
+
+        return objects;
+    }
+}
+11. ---------------------------------
+public void Summarize()
+{
+    ...//everything prior to end of Active.UsingTransaction
+    var calculator = new AreaCalculator();
+    calculator.Update(areaObjects);
+    var message = $"\nFound {calculator.Count} objects" +
+        $"\nSum of areas: {calculator.Area}" +
+        $"\nSum of perimiters: {calculator.Perimeter}";
+
+    ed.WriteMessage(message);
+}
+12. ---------------------------------
+public void Summarize(Func<Editor, IFilterSource, PromptSelectionResult> selectionTechnique)
+{
+    ...
+    var selectionResult = selectionTechnique(ed, _filterSource);
+
+public static class EditorExtensions
+{
+    public static PromptSelectionResult SelectAllUsingFilterSource(this Editor ed, IFilterSource filterSource)
+    {
+        var selectionFilter = GetSelectionFilterFrom(filterSource);
+
+        return ed.SelectAll(selectionFilter);
+    }
+
+    public static PromptSelectionResult SelectCrossingWindowUsingFilterSource(this Editor ed, IFilterSource filterSource)
+    {
+        var selectionFilter = GetSelectionFilterFrom(filterSource);
+
+        var startPoint = ed.GetPoint("\nSelect first point: ").Value;
+        var endPoint = ed.GetCorner("\nSelect second point: ", startPoint).Value;
+
+        return ed.SelectCrossingWindow(startPoint, endPoint, selectionFilter);
+    }
+
+    private static SelectionFilter GetSelectionFilterFrom(IFilterSource filterSource)
+    {
+        return new SelectionFilter(filterSource.GetFilter());
+    }
+}
+
+[CommandMethod("SUMAREASREFACTORED")]
+public void SumAreasRefactored()
+{
+    IFilterSource filterSource = new AreaFilter();
+    var summarizer = new AreaObjectSummarizer(filterSource);
+    summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
+}
+
+[CommandMethod("SUMAREASCIRCLES")]
+public void SumCircleAreas()
+{
+    var filterSource = new CircleFilter();
+    var summarizer = new AreaObjectSummarizer(filterSource);
+    summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
+}
+
+[CommandMethod("SUMAREASCIRCLESWINDOW")]
+public void SumCircleAreasWindow()
+{
+    var filterSource = new CircleFilter();
+    var summarizer = new AreaObjectSummarizer(filterSource);
+    summarizer.Summarize((ed, fs) => ed.SelectCrossingWindowUsingFilterSource(fs));
+}
