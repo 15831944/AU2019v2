@@ -79,10 +79,10 @@ namespace AU2019
         //[CommandMethod("SUMAREASREFACTORED")]
         //public void SumAreasRefactored()
         //{
-        //    var summarizer = new AreaObjectSummarizer(new AreaFilterSource());
+        //    var summarizer = new AreaObjectSummarizer();
         //    summarizer.Summarize();
         //}
-        
+
         //[CommandMethod("SUMAREASREFACTORED")]
         //public void SumAreasRefactored()
         //{

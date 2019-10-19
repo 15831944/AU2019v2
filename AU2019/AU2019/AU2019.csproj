@@ -57,13 +57,21 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaAdapters\AreaObjectAdapterBase.cs" />
+    <Compile Include="AreaAdapters\IAreaObject.cs" />
+    <Compile Include="AreaCalculator\IAreaCalculator.cs" />
     <Compile Include="Autocad\Active.cs" />
     <Compile Include="Autocad\PaletteHelper.cs" />
+    <Compile Include="AreaObjectSummarizer.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="Extensions\EditorExtensions.cs" />
+    <Compile Include="Extensions\EntityExtensions.cs" />
+    <Compile Include="Filters\IFilterSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CompletedSamples.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

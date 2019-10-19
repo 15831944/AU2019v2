@@ -64,6 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaCalculatorTests.cs" />
+    <Compile Include="AreaFilterTests.cs" />
+    <Compile Include="CircleFilterTests.cs" />
+    <Compile Include="IFilterSourceTestsBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

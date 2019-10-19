@@ -375,23 +375,27 @@ public static class EditorExtensions
 [CommandMethod("SUMAREASREFACTORED")]
 public void SumAreasRefactored()
 {
-    IFilterSource filterSource = new AreaFilter();
-    var summarizer = new AreaObjectSummarizer(filterSource);
+    IFilterSource filterSource = new AreaObjectFilterSource();
+    IAreaObjectCalculator calculator = new AreaObjectCalculator();
+    var summarizer = new AreaObjectSummarizer(filterSource, calculator);
     summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
 }
 
 [CommandMethod("SUMAREASCIRCLES")]
 public void SumCircleAreas()
 {
-    var filterSource = new CircleFilter();
-    var summarizer = new AreaObjectSummarizer(filterSource);
+    var filterSource = new CircleFilterSource();
+    IAreaObjectCalculator calculator = new AreaObjectCalculator();
+    var summarizer = new AreaObjectSummarizer(filterSource, calculator);
     summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
 }
 
 [CommandMethod("SUMAREASCIRCLESWINDOW")]
 public void SumCircleAreasWindow()
 {
-    var filterSource = new CircleFilter();
-    var summarizer = new AreaObjectSummarizer(filterSource);
+    var filterSource = new CircleFilterSource();
+    IAreaObjectCalculator calculator = new AreaObjectCalculator();
+    var summarizer = new AreaObjectSummarizer(filterSource, calculator);
     summarizer.Summarize((ed, fs) => ed.SelectCrossingWindowUsingFilterSource(fs));
 }
+
