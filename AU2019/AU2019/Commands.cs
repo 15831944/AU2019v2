@@ -95,7 +95,7 @@ namespace AU2019
         //[CommandMethod("SUMAREASCIRCLES")]
         //public void SumCircleAreas()
         //{
-        //    var filterSource = new CircleFilterSource();
+        //    IFilterSource filterSource = new CircleFilterSource();
         //    IAreaObjectCalculator calculator = new AreaObjectCalculator();
         //    var summarizer = new AreaObjectSummarizer(filterSource, calculator);
         //    summarizer.Summarize((ed, fs) => ed.SelectAllUsingFilterSource(fs));
@@ -104,7 +104,7 @@ namespace AU2019
         //[CommandMethod("SUMAREASCIRCLESWINDOW")]
         //public void SumCircleAreasWindow()
         //{
-        //    var filterSource = new CircleFilterSource();
+        //    IFilterSource filterSource = new CircleFilterSource();
         //    IAreaObjectCalculator calculator = new AreaObjectCalculator();
         //    var summarizer = new AreaObjectSummarizer(filterSource, calculator);
         //    summarizer.Summarize((ed, fs) => ed.SelectCrossingWindowUsingFilterSource(fs));
